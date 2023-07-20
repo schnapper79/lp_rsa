@@ -7,54 +7,50 @@ import (
 	"time"
 )
 
-func fast_exp(num, pow uint64) uint64 {
-	result := uint64(1)
+func fast_exp(num, pow int) int {
+	n := int(num)
+	result := int(1)
 	for pow > 0 {
 		if pow%2 == 1 {
-			result *= num
+			result *= n
 		}
 		pow /= 2
-		num *= num
+		n *= n
 	}
 	return result
 }
 
-func fast_exp_mod(num, pow, mod uint64) uint64 {
-	if pow == 0 {
-		return 1 % mod
-	} else if pow == 1 {
-		return num % mod
-	}
-
-	result := uint64(1)
+func fast_exp_mod(num, pow, mod int) int {
+	result := int(1)
 	// pow to binary with factors
-	m := num % mod
+	m := int(num % mod)
 	for ; pow > 0; pow /= 2 {
 		if pow%2 == 1 {
 			result *= m
+			result = result % mod
 		}
 		m = (m * m) % mod
 	}
-	return result % mod
+	rs := result % (mod)
+	return int(rs)
 }
 
 // Return a pseudo random number in the range [min, max).
-func rand_range(min uint64, max uint64) uint64 {
-	return  min + random.(max-min)
+func rand_range(min int, max int) int {
+	return min + random.Intn(max-min)
 }
 
-func is_probable_prime(p uint64) (bool, uint64, uint64) {
+func is_probable_prime(p int) (bool, int, int) {
 	for i := 0; i < num_tests; i++ {
-		n := rand_range(2, p-1)
-		if fast_exp_mod(n, p-1, p) != 1 {
-
+		n := rand_range(2, p/100)
+		if r := fast_exp_mod(n, p-1, p); r != 1 {
 			return false, n, fast_exp_mod(n, p-1, p)
 		}
 	}
 	return true, 0, 0
 }
 
-func find_prime(min, max uint64) uint64 {
+func find_prime(min, max int) int {
 	for {
 		p := rand_range(min, max+1)
 		if p%2 == 0 {
@@ -67,11 +63,11 @@ func find_prime(min, max uint64) uint64 {
 }
 
 func test_known_values() {
-	primes := []uint64{
+	primes := []int{
 		10009, 11113, 11699, 12809, 14149,
 		15643, 17107, 17881, 19301, 19793,
 	}
-	composites := []uint64{
+	composites := []int{
 		10323, 11397, 12212, 13503, 14599,
 		16113, 17547, 17549, 18893, 19999,
 	}
@@ -104,7 +100,7 @@ func main() {
 	// test_known_values()
 	test_known_values()
 
-	var num uint64
+	var num int
 	for {
 		fmt.Printf("\ndigits: ")
 		fmt.Scan(&num)
