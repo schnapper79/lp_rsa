@@ -22,18 +22,13 @@ func fast_exp(num, pow int) int {
 }
 
 func fast_exp_mod(num, pow, mod int) int {
-	if pow == 0 {
-		return 1 % mod
-	} else if pow == 1 {
-		return num % mod
-	}
-
 	result := 1
 	// pow to binary with factors
 	m := num % mod
 	for ; pow > 0; pow /= 2 {
 		if pow%2 == 1 {
 			result *= m
+			result %=mod
 		}
 		m = (m * m) % mod
 	}
